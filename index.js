@@ -25,6 +25,7 @@ async function run() {
       .collection("reviews");
     const ordersCollection = client.db("fix-manufacture").collection("orders");
 
+    // get all the items api
     app.get("/parts", async (req, res) => {
       const query = {};
       const cursor = partsCollection.find(query);
@@ -32,6 +33,7 @@ async function run() {
       res.send(parts);
     });
 
+    // get a single item api
     app.get("/parts/:id", async (req, res) => {
       const id = req.params.id;
       const query = { _id: ObjectId(id) };
@@ -39,6 +41,7 @@ async function run() {
       res.send(part);
     });
 
+    // update quantity api
     app.put("/parts/:id", async (req, res) => {
       const id = req.params.id;
       const updateQuantity = req.body;
@@ -53,15 +56,25 @@ async function run() {
       res.send(result);
     });
 
+    //  get all reviews api
     app.get("/reviews", async (req, res) => {
       const reviews = await reviewsCollection.find().toArray();
       res.send(reviews);
     });
 
+    // order place api
     app.post("/orders", async (req, res) => {
       const order = req.body;
       const result = await ordersCollection.insertOne(order);
       res.send(result);
+    });
+
+    // get all orders based on user
+    app.get("/orders", async (req, res) => {
+      const email = req.query.email;
+      const query = { email: email };
+      const order = await ordersCollection.find(query).toArray();
+      res.send(order);
     });
   } finally {
   }
