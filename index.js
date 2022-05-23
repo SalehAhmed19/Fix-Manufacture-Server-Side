@@ -20,6 +20,10 @@ async function run() {
   try {
     await client.connect();
     const partsCollection = client.db("fix-manufacture").collection("parts");
+    const reviewsCollection = client
+      .db("fix-manufacture")
+      .collection("reviews");
+    const ordersCollection = client.db("fix-manufacture").collection("orders");
 
     app.get("/parts", async (req, res) => {
       const query = {};
@@ -27,11 +31,37 @@ async function run() {
       const parts = await cursor.toArray();
       res.send(parts);
     });
+
     app.get("/parts/:id", async (req, res) => {
       const id = req.params.id;
       const query = { _id: ObjectId(id) };
       const part = await partsCollection.findOne(query);
       res.send(part);
+    });
+
+    app.put("/parts/:id", async (req, res) => {
+      const id = req.params.id;
+      const updateQuantity = req.body;
+      const filter = { _id: ObjectId(id) };
+      const options = { upsert: true };
+      const update = {
+        $set: {
+          available_quantity: updateQuantity.quantity,
+        },
+      };
+      const result = await partsCollection.updateOne(filter, update, options);
+      res.send(result);
+    });
+
+    app.get("/reviews", async (req, res) => {
+      const reviews = await reviewsCollection.find().toArray();
+      res.send(reviews);
+    });
+
+    app.post("/orders", async (req, res) => {
+      const order = req.body;
+      const result = await ordersCollection.insertOne(order);
+      res.send(result);
     });
   } finally {
   }
