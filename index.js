@@ -24,6 +24,7 @@ async function run() {
       .db("fix-manufacture")
       .collection("reviews");
     const ordersCollection = client.db("fix-manufacture").collection("orders");
+    const usersCollection = client.db("fix-manufacture").collection("users");
 
     // get all the items api
     app.get("/parts", async (req, res) => {
@@ -82,6 +83,23 @@ async function run() {
       const id = req.params.id;
       const query = { _id: ObjectId(id) };
       const result = await ordersCollection.deleteOne(query);
+      res.send(result);
+    });
+
+    // create user
+    app.put("/user/:email", async (req, res) => {
+      const email = req.params.email;
+      const filter = { email: email };
+      const user = req.body;
+      const options = { upsert: true };
+      const updateDoc = {
+        $set: user,
+      };
+      const result = await usersCollection.updateOne(
+        filter,
+        updateDoc,
+        options
+      );
       res.send(result);
     });
   } finally {
