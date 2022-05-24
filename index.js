@@ -100,7 +100,12 @@ async function run() {
         updateDoc,
         options
       );
-      res.send(result);
+      const token = jwt.sign(
+        { email: email },
+        process.env.ACCESS_TOKEN_SECRET,
+        { expiresIn: "1d" }
+      );
+      res.send({ result: result, accessToken: token });
     });
   } finally {
   }
