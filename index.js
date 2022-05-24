@@ -113,6 +113,12 @@ async function run() {
       }
     });
 
+    // get all orders
+    app.get("/all-orders", verifyJWT, verifyAdmin, async (req, res) => {
+      const orders = await ordersCollection.find().toArray();
+      res.send(orders);
+    });
+
     // delete order
     app.delete("/orders/:id", async (req, res) => {
       const id = req.params.id;
