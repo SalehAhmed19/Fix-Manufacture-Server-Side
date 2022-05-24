@@ -142,6 +142,12 @@ async function run() {
       );
       res.send({ result: result, accessToken: token });
     });
+
+    // get user
+    app.get("/users", verifyJWT, async (req, res) => {
+      const users = await usersCollection.find().toArray();
+      res.send(users);
+    });
   } finally {
   }
 }
