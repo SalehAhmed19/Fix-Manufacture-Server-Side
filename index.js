@@ -143,6 +143,17 @@ async function run() {
       res.send({ result: result, accessToken: token });
     });
 
+    // make admin api
+    app.put("/user/admin/:email", verifyJWT, async (req, res) => {
+      const email = req.params.email;
+      const filter = { email: email };
+      const updateDoc = {
+        $set: { role: "admin" },
+      };
+      const result = await usersCollection.updateOne(filter, updateDoc);
+      return res.send(result);
+    });
+
     // get user
     app.get("/users", verifyJWT, async (req, res) => {
       const users = await usersCollection.find().toArray();
