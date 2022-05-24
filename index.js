@@ -88,7 +88,7 @@ async function run() {
     });
 
     //  get all reviews api
-    app.get("/reviews", verifyJWT, async (req, res) => {
+    app.get("/reviews", async (req, res) => {
       const reviews = await reviewsCollection.find().toArray();
       res.send(reviews);
     });
@@ -101,7 +101,7 @@ async function run() {
     });
 
     // get all orders based on user
-    app.get("/orders", verifyJWT, async (req, res) => {
+    app.get("/orders", async (req, res) => {
       const email = req.query.email;
       const decodedEmail = req.decoded.email;
       if (email === decodedEmail) {
@@ -114,7 +114,7 @@ async function run() {
     });
 
     // delete order
-    app.delete("/orders/:id", verifyJWT, async (req, res) => {
+    app.delete("/orders/:id", async (req, res) => {
       const id = req.params.id;
       const query = { _id: ObjectId(id) };
       const result = await ordersCollection.deleteOne(query);
