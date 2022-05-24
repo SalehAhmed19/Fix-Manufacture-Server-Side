@@ -16,6 +16,23 @@ const client = new MongoClient(uri, {
   useUnifiedTopology: true,
   serverApi: ServerApiVersion.v1,
 });
+
+// verify JWT
+const verifyJWT = (req, res, next) => {
+  const authHeader = req.headers.authorization;
+  if (!authHeader) {
+    return res.status(401).send({ message: "Unauthorized" });
+  }
+  const token = authHeader.split(" ")[1];
+  jwt.verify(token, process.env.ACCESS_TOKEN_SECRET, function (err, decoded) {
+    if (err) {
+      return res.status(403).send({ message: "Forbidden" });
+    }
+    req.decoded = decoded;
+    next();
+  });
+};
+
 async function run() {
   try {
     await client.connect();
@@ -25,6 +42,19 @@ async function run() {
       .collection("reviews");
     const ordersCollection = client.db("fix-manufacture").collection("orders");
     const usersCollection = client.db("fix-manufacture").collection("users");
+
+    // verify admin
+    const verifyAdmin = async (req, res, next) => {
+      const initiator = req.decoded.email;
+      const initiatorAccount = await usersCollection.findOne({
+        email: initiator,
+      });
+      if (initiatorAccount.role === "admin") {
+        next();
+      } else {
+        return res.status(403).send({ message: "Forbidden" });
+      }
+    };
 
     // get all the items api
     app.get("/parts", async (req, res) => {
@@ -58,7 +88,7 @@ async function run() {
     });
 
     //  get all reviews api
-    app.get("/reviews", async (req, res) => {
+    app.get("/reviews", verifyJWT, async (req, res) => {
       const reviews = await reviewsCollection.find().toArray();
       res.send(reviews);
     });
@@ -71,15 +101,20 @@ async function run() {
     });
 
     // get all orders based on user
-    app.get("/orders", async (req, res) => {
+    app.get("/orders", verifyJWT, async (req, res) => {
       const email = req.query.email;
-      const query = { email: email };
-      const order = await ordersCollection.find(query).toArray();
-      res.send(order);
+      const decodedEmail = req.decoded.email;
+      if (email === decodedEmail) {
+        const query = { email: email };
+        const order = await ordersCollection.find(query).toArray();
+        return res.send(order);
+      } else {
+        return res.status(403).send({ message: "Forbidden" });
+      }
     });
 
     // delete order
-    app.delete("/orders/:id", async (req, res) => {
+    app.delete("/orders/:id", verifyJWT, async (req, res) => {
       const id = req.params.id;
       const query = { _id: ObjectId(id) };
       const result = await ordersCollection.deleteOne(query);
