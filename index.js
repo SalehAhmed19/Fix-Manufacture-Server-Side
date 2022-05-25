@@ -183,7 +183,7 @@ async function run() {
     });
 
     // create user
-    app.put("/users/:email", verifyJWT, async (req, res) => {
+    app.put("/users/:email", async (req, res) => {
       const email = req.params.email;
       const filter = { email: email };
       const user = req.body;
