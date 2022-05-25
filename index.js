@@ -116,7 +116,7 @@ async function run() {
     });
 
     // add product
-    app.post("/parts", async (req, res) => {
+    app.post("/parts", verifyJWT, verifyAdmin, async (req, res) => {
       const part = req.body;
       const result = await partsCollection.insertOne(part);
       res.send(result);
