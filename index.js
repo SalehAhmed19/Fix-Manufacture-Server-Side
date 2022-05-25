@@ -244,6 +244,12 @@ async function run() {
       );
       res.send(result);
     });
+    app.get("/users/:email", verifyJWT, async (req, res) => {
+      const email = req.params.email;
+      const query = { email: email };
+      const profileInfo = await usersCollection.findOne(query);
+      res.send(profileInfo);
+    });
   } finally {
   }
 }
