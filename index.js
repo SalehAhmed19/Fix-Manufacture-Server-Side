@@ -43,6 +43,9 @@ async function run() {
       .collection("reviews");
     const ordersCollection = client.db("fix-manufacture").collection("orders");
     const usersCollection = client.db("fix-manufacture").collection("users");
+    const paymentsCollection = client
+      .db("fix-manufacture")
+      .collection("payments");
 
     // verify admin
     const verifyAdmin = async (req, res, next) => {
@@ -138,6 +141,24 @@ async function run() {
       const query = { _id: ObjectId(id) };
       const order = await ordersCollection.findOne(query);
       res.send(order);
+    });
+
+    app.patch("/orders/:id", verifyJWT, async (req, res) => {
+      const id = req.params.id;
+      const payment = req.body;
+      const filter = { _id: ObjectId(id) };
+      const updatedDoc = {
+        $set: {
+          paid: true,
+          transactionId: payment.transactionId,
+        },
+      };
+      const result = await paymentsCollection.insertOne(payment);
+      const updatedOrders = await ordersCollection.updateOne(
+        filter,
+        updatedDoc
+      );
+      res.send(updatedOrders);
     });
 
     // delete order
