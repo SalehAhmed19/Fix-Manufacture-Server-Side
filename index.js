@@ -175,7 +175,7 @@ async function run() {
     });
 
     // delete order
-    app.delete("/orders/:id", async (req, res) => {
+    app.delete("/orders/:id", verifyJWT, async (req, res) => {
       const id = req.params.id;
       const query = { _id: ObjectId(id) };
       const result = await ordersCollection.deleteOne(query);
@@ -183,7 +183,7 @@ async function run() {
     });
 
     // create user
-    app.put("/users/:email", async (req, res) => {
+    app.put("/users/:email", verifyJWT, async (req, res) => {
       const email = req.params.email;
       const filter = { email: email };
       const user = req.body;
@@ -227,6 +227,22 @@ async function run() {
     app.get("/users", verifyJWT, verifyAdmin, async (req, res) => {
       const users = await usersCollection.find().toArray();
       res.send(users);
+    });
+
+    app.put("/users/:email", verifyJWT, async (req, res) => {
+      const email = req.params.email;
+      const profileInfo = req.body;
+      const options = { upsert: true };
+      const filter = { email: email };
+      const updateDoc = {
+        $set: profileInfo,
+      };
+      const result = await usersCollection.updateOne(
+        filter,
+        updateDoc,
+        options
+      );
+      res.send(result);
     });
   } finally {
   }
