@@ -115,6 +115,13 @@ async function run() {
       res.send(reviews);
     });
 
+    // add product
+    app.post("/parts", async (req, res) => {
+      const part = req.body;
+      const result = await partsCollection.insertOne(part);
+      res.send(result);
+    });
+
     // order place api
     app.post("/orders", async (req, res) => {
       const order = req.body;
