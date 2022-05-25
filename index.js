@@ -103,6 +103,12 @@ async function run() {
       res.send(result);
     });
 
+    // add review api
+    app.post("/reviews", async (req, res) => {
+      const reviews = req.body;
+      const result = await reviewsCollection.insertOne(reviews);
+      res.send(result);
+    });
     //  get all reviews api
     app.get("/reviews", async (req, res) => {
       const reviews = await reviewsCollection.find().toArray();
