@@ -96,7 +96,7 @@ async function run() {
       const options = { upsert: true };
       const update = {
         $set: {
-          available_quantity: updateQuantity.quantity,
+          available_quantity: updateQuantity.available_quantity,
         },
       };
       const result = await partsCollection.updateOne(filter, update, options);
