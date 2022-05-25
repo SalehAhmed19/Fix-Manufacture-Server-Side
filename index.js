@@ -57,7 +57,7 @@ async function run() {
       }
     };
 
-    // payment api created
+    // payment method
     app.post("/create-payment-intent", verifyJWT, async (req, res) => {
       const { price } = req.body;
       const amount = price * 100;
