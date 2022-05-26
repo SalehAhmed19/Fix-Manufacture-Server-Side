@@ -164,6 +164,14 @@ async function run() {
       res.send(order);
     });
 
+    // user
+    app.get("/orders/", verifyJWT, async (req, res) => {
+      const email = req.query.email;
+      const query = { email: email };
+      const order = await ordersCollection.find(query);
+      res.send(order);
+    });
+
     app.patch("/orders/:id", verifyJWT, async (req, res) => {
       const id = req.params.id;
       const payment = req.body;
