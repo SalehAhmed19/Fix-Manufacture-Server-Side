@@ -223,6 +223,22 @@ async function run() {
       return res.send(result);
     });
 
+    // remove admin api
+    app.put(
+      "/users/admin-remove/:email",
+      verifyJWT,
+      verifyAdmin,
+      async (req, res) => {
+        const email = req.params.email;
+        const filter = { email: email };
+        const updateDoc = {
+          $set: { role: "" },
+        };
+        const result = await usersCollection.updateOne(filter, updateDoc);
+        return res.send(result);
+      }
+    );
+
     // get user
     app.get("/users", verifyJWT, verifyAdmin, async (req, res) => {
       const users = await usersCollection.find().toArray();
