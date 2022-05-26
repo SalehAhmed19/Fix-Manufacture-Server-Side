@@ -104,7 +104,7 @@ async function run() {
     });
 
     // delete parts
-    app.delete("/parts/:id", verifyJWT, async (req, res) => {
+    app.delete("/parts/:id", verifyJWT, verifyAdmin, async (req, res) => {
       const id = req.params.id;
       const query = { _id: ObjectId(id) };
       const result = await partsCollection.deleteOne(query);
