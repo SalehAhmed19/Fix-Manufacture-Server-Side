@@ -103,6 +103,14 @@ async function run() {
       res.send(result);
     });
 
+    // delete parts
+    app.delete("/parts/:id", verifyJWT, async (req, res) => {
+      const id = req.params.id;
+      const query = { _id: ObjectId(id) };
+      const result = await partsCollection.deleteOne(query);
+      res.send(result);
+    });
+
     // add review api method
     app.post("/reviews", async (req, res) => {
       const reviews = req.body;
