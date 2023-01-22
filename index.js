@@ -6,6 +6,7 @@ const jwt = require("jsonwebtoken");
 require("dotenv").config();
 const port = process.env.PORT || 4000;
 const stripe = require("stripe")(process.env.PAYMENT_SECRET_KEY);
+const sdk = require("api")("@bkash/v1.2.0-beta#1mld74kq6voepa");
 
 // middleware
 app.use(cors());
@@ -71,6 +72,11 @@ async function run() {
       });
       res.send({ clientSecret: paymentIntent.client_secret });
     });
+
+    sdk
+      .createPaymentUsingPOST()
+      .then(({ data }) => console.log(data))
+      .catch((err) => console.error(err));
 
     // get all the items api
     app.get("/parts", async (req, res) => {
