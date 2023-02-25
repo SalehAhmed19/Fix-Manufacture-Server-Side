@@ -72,11 +72,6 @@ async function run() {
       res.send({ clientSecret: paymentIntent.client_secret });
     });
 
-    sdk
-      .createPaymentUsingPOST()
-      .then(({ data }) => console.log(data))
-      .catch((err) => console.error(err));
-
     // get all the items api
     app.get("/parts", async (req, res) => {
       const query = {};
