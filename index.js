@@ -6,7 +6,6 @@ const jwt = require("jsonwebtoken");
 require("dotenv").config();
 const port = process.env.PORT || 4000;
 const stripe = require("stripe")(process.env.PAYMENT_SECRET_KEY);
-const sdk = require("api")("@bkash/v1.2.0-beta#1mld74kq6voepa");
 
 // middleware
 app.use(cors());
