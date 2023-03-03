@@ -60,16 +60,41 @@ async function run() {
       }
     };
 
-    // payment method api method
-    app.post("/create-payment-intent", verifyJWT, async (req, res) => {
-      const { price } = req.body;
-      const amount = price * 100;
-      const paymentIntent = await stripe.paymentIntents.create({
-        amount: amount,
-        currency: "eur",
-        payment_method_types: ["card"],
+    // // payment method api method
+    // app.post("/create-payment-intent", verifyJWT, async (req, res) => {
+    //   const { price } = req.body;
+    //   const amount = price * 100;
+    //   const paymentIntent = await stripe.paymentIntents.create({
+    //     amount: amount,
+    //     currency: "eur",
+    //     payment_method_types: ["card"],
+    //   });
+    //   res.send({ clientSecret: paymentIntent.client_secret });
+    // });
+
+    app.post("/create-checkout-session", async (req, res) => {
+      const order = req.body.order;
+      const session = await stripe.checkout.sessions.create({
+        line_items: [
+          {
+            price_data: {
+              currency: "usd",
+              product_data: {
+                name: order.product,
+                // price: order.price,
+              },
+              unit_amount: parseInt(order.price),
+            },
+            quantity: parseInt(order.quantity),
+          },
+        ],
+        // line_items,
+        mode: "payment",
+        success_url: `http://localhost:3000/success/${order.productId}`,
+        cancel_url: "http://localhost:3000/cancel",
       });
-      res.send({ clientSecret: paymentIntent.client_secret });
+
+      res.send({ url: session.url });
     });
 
     // get all the items api
@@ -171,7 +196,7 @@ async function run() {
       const updatedDoc = {
         $set: {
           paid: true,
-          transactionId: payment.transactionId,
+          // transactionId: payment.transactionId,
         },
       };
       const result = await paymentsCollection.insertOne(payment);
@@ -179,7 +204,7 @@ async function run() {
         filter,
         updatedDoc
       );
-      res.send(updatedOrders);
+      res.send(updatedOrders, result);
     });
 
     // delete order

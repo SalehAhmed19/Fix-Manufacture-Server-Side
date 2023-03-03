@@ -20,6 +20,6 @@
     "mongodb": "^4.6.0",
     "nodemailer-mailgun-transport": "^2.1.4",
     "nodemon": "^2.0.16",
-    "stripe": "^9.4.0"
+    "stripe": "^9.16.0"
   }
 }
